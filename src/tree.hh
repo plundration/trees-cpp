@@ -15,5 +15,5 @@ struct Branch {
 Branch generate_branch(int depth, int max, Vector2 origin, float rot, float length);
 Branch generate_tree(int max_recursion);
 
-const float len_falloff = 0.2f;
-const float density = 0.01f;
+const float len_falloff = 0.7f;
+const float density = 0.001f;

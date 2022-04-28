@@ -21,8 +21,7 @@ Branch generate_branch(int depth, int max, Vector2 origin, float rot, float leng
     
     if (depth == max) return self;
 
-
-    for (int i = 0; i < self.length * density * pow(1.8f, depth/2); i++) {
+    for (int i = 0; i < self.length * density * pow(1.8f, depth/2) + 1; i++) {
         Vector2 b_origin = origin + self.dir * length * rand_float(0.0, 1.0);
         self.branches.push_back(generate_branch(depth+1, max, b_origin, rot+rand_rot(), length * len_falloff * rand_float(0.7f, 1.3f)));
     }
@@ -37,7 +36,7 @@ Branch generate_tree(int max_recursion) {
     tree.length = 400.0f;
 
     for (int i = 0; i < 4; i++) {
-        tree.branches.push_back(generate_branch(1, max_recursion, tree.dir*tree.length, 3.1415/2.0f + rand_rot(), tree.length * len_falloff * rand_float(0.7f, 1.3f)));
+        tree.branches.push_back(generate_branch(1, max_recursion, tree.origin + tree.dir*tree.length, 3.1415/2.0f + rand_rot(), tree.length * len_falloff * rand_float(0.7f, 1.3f)));
     }
 
     return tree;

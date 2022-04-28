@@ -16,6 +16,10 @@ Vector2 operator*(const Vector2 &v, float f) {
 	return Vector2{ v.x * f, v.y * f };
 }
 
+Vector2 operator*(const Vector2 &v, const float &f) {
+	return Vector2{ v.x * f, v.y * f };
+}
+
 Vector2 operator/(const Vector2 &v, float f) {
 	return Vector2{ v.x / f, v.y / f };
 }

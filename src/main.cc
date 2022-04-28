@@ -12,7 +12,7 @@ int SCREEN_HEIGHT;
 
 using namespace std;
 
-void DrawBranches(Branch branch);
+void DrawBranch(const Branch &branch);
 
 int main() 
 {
@@ -50,7 +50,7 @@ int main()
             ClearBackground(BLACK);
 
             BeginMode2D(camera);
-                DrawBranches(tree);  
+                DrawBranch(tree);  
             EndMode2D();
         EndDrawing();
     }
@@ -59,9 +59,10 @@ int main()
     return 0;
 }
 
-void DrawBranches(Branch branch) {
+void DrawBranch(const Branch &branch) {
+    // DrawLineEx(branch.origin, branch.origin + branch.dir * branch.length, 45.0f/pow(branch.level+1.0f,2.5f), RAYWHITE);
+    DrawLineEx(branch.origin, Vector2Add(branch.origin, Vector2Scale(branch.dir, branch.length)), 45.0f/pow(branch.level+1.0f,1.2f), RAYWHITE);
     for (auto& b : branch.branches) {
-        DrawLineEx(b.origin, Vector2Scale(b.dir, b.length), 45.0f/pow(b.level+1.0f,2.5f), RAYWHITE);
-        DrawBranches(b);
+        DrawBranch(b);
     }
 }
