@@ -14,6 +14,7 @@ const float CAMERA_SPEED = 2.0f;
 
 using namespace std;
 
+void DrawBranch(const Branch &branch, float time);
 void DrawBranch(const Branch &branch);
 
 int main() 
@@ -22,7 +23,11 @@ int main()
     srand(time(0));
 
     float time = 0.0f;
-    Branch tree = generate_tree(9);
+    // Branch tree = generate_tree(9);
+    TreeGenerator treeGenerator{};
+    Branch tree = treeGenerator.getTree();
+    
+    // TODO generate mesh
 
     SCREEN_WIDTH = 850;
     SCREEN_HEIGHT = 850;
@@ -36,7 +41,7 @@ int main()
         .zoom = 1.0f
     };
     
-    float timeMultiplier = 1.0f;
+    float timeMultiplier = 9.0f;
     
     while (!WindowShouldClose())
     {
@@ -49,7 +54,7 @@ int main()
         if (IsKeyDown(KEY_A)) camera.target.x -= CAMERA_SPEED/camera.zoom;
 
         if (IsKeyPressed(KEY_R)) {
-            tree = generate_tree(9);
+            tree = treeGenerator.getTree();
             time = 0.0f;
         }
         
@@ -67,9 +72,26 @@ int main()
     return 0;
 }
 
-void DrawBranch(const Branch &branch) {
+/*
+
+void DrawBranch(const Branch &branch, float time) {
     // DrawLineEx(branch.origin, branch.origin + branch.dir * branch.length, 45.0f/pow(branch.level+1.0f,2.5f), RAYWHITE);
-    DrawLineEx(branch.origin, Vector2Add(branch.origin, Vector2Scale(branch.dir, branch.length)), pow(branch.length, 0.90f) * 0.09f, RAYWHITE);
+    float m = fminf(1.0f, fmaxf(0, time - static_cast<float>(branch.level)));
+    DrawLineEx(branch.origin, Vector2Add(branch.origin, Vector2Scale(branch.dir, branch.length * m)), pow(branch.length, 0.90f) * 0.09f, RAYWHITE);
+
+    if (branch.level+1 > time) return;
+    for (auto& b : branch.branches) {
+        DrawBranch(b, time);
+    }
+}
+
+*/
+
+void DrawBranch(const Branch &branch) {
+    for (auto& s : branch.segments) {
+        DrawTriangle(s.blp, s.brp, s.trp, RAYWHITE);
+        DrawTriangle(s.blp, s.trp, s.tlp, RAYWHITE);
+    }
     for (auto& b : branch.branches) {
         DrawBranch(b);
     }

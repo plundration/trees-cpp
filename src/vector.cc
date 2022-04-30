@@ -1,5 +1,11 @@
 #include "vector.hh"
 
+#include <cmath>
+
+float mag(const Vector2 &a) {
+	return sqrt(a.x*a.x+a.y*a.y);
+}
+
 Vector2 operator-(const Vector2 &a) {
 	return Vector2{ -a.x, -a.y };
 }

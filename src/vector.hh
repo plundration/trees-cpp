@@ -1,6 +1,8 @@
 #pragma once
 #include "raylib.h"
 
+float mag(const Vector2 &a);
+
 Vector2 operator-(const Vector2 &a);
 Vector2 operator*(const Vector2 &v, float f);
 Vector2 operator/(const Vector2 &v, float f);
