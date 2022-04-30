@@ -10,6 +10,8 @@
 int SCREEN_WIDTH;
 int SCREEN_HEIGHT;
 
+const float CAMERA_SPEED = 2.0f;
+
 using namespace std;
 
 void DrawBranch(const Branch &branch);
@@ -40,6 +42,11 @@ int main()
     {
         float deltaTime = GetFrameTime()*timeMultiplier;
         time += deltaTime;
+
+        if (IsKeyDown(KEY_W)) camera.target.y -= CAMERA_SPEED/camera.zoom;
+        if (IsKeyDown(KEY_S)) camera.target.y += CAMERA_SPEED/camera.zoom;
+        if (IsKeyDown(KEY_D)) camera.target.x += CAMERA_SPEED/camera.zoom;
+        if (IsKeyDown(KEY_A)) camera.target.x -= CAMERA_SPEED/camera.zoom;
 
         if (IsKeyPressed(KEY_R)) {
             tree = generate_tree(9);
