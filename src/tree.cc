@@ -17,16 +17,16 @@ Branch generate_branch(int depth, int max, Vector2 origin, float rot, float leng
     if (depth + rand() % 2 >= max) return self;
     if (length/depth < 4.0f) return self;
 
-    for (int i = 0; i < self.length * density * pow(1.06f, depth/8.8f) + 1; i++) {
+    for (int i = 0; i < self.length * density * pow(1.03f, depth/8.8f) + 1; i++) {
         Vector2 b_origin = origin + self.dir * length * rand_float(0.1, 0.9);
         self.branches.push_back(
             generate_branch(depth+1, max, b_origin, rot+rand_rot(), length * len_falloff * rand_float(0.7f, 1.2f))
         );
     }
   
-    auto choice = rand() % 6;
-    if (choice == 0) return self;
-    else if (choice % 2 == 0) {
+    if (length < 14.0f) return self;
+    
+    if (rand() % 2 == 0) {
         self.branches.push_back(
             generate_extension_branch(depth+1, max, self.origin + self.dir * self.length, rot, self.length)       
         );
