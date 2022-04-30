@@ -20,7 +20,7 @@ int main()
     srand(time(0));
 
     float time = 0.0f;
-    Branch tree = generate_tree(8);
+    Branch tree = generate_tree(9);
 
     SCREEN_WIDTH = 850;
     SCREEN_HEIGHT = 850;
@@ -42,13 +42,14 @@ int main()
         time += deltaTime;
 
         if (IsKeyPressed(KEY_R)) {
-            tree = generate_tree(7);
+            tree = generate_tree(9);
             time = 0.0f;
         }
+        
+        camera.zoom *= 1 + GetMouseWheelMove()/30.0f;
 
         BeginDrawing();
             ClearBackground(BLACK);
-
             BeginMode2D(camera);
                 DrawBranch(tree);  
             EndMode2D();
@@ -61,7 +62,7 @@ int main()
 
 void DrawBranch(const Branch &branch) {
     // DrawLineEx(branch.origin, branch.origin + branch.dir * branch.length, 45.0f/pow(branch.level+1.0f,2.5f), RAYWHITE);
-    DrawLineEx(branch.origin, Vector2Add(branch.origin, Vector2Scale(branch.dir, branch.length)), 45.0f/pow(branch.level+1.0f,1.2f), RAYWHITE);
+    DrawLineEx(branch.origin, Vector2Add(branch.origin, Vector2Scale(branch.dir, branch.length)), pow(branch.length, 0.90f) * 0.09f, RAYWHITE);
     for (auto& b : branch.branches) {
         DrawBranch(b);
     }
