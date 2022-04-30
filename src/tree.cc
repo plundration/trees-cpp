@@ -9,7 +9,7 @@ float rand_float(float min, float max) {
 }
 
 float rand_rot() {
-    return rand() % 2 == 0 ? rand_float(-0.6f, -0.2f) : rand_float(0.2f, 0.6f);
+    return rand() % 2 == 0 ? rand_float(-1.2f, -0.2f) : rand_float(0.2f, 1.2f);
 }
 
 Branch generate_branch(int depth, int max, Vector2 origin, float rot, float length) {
@@ -35,7 +35,7 @@ Branch generate_tree(int max_recursion) {
     tree.dir = {0,-1};
     tree.length = 400.0f;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 2; i++) {
         tree.branches.push_back(generate_branch(1, max_recursion, tree.origin + tree.dir*tree.length, 3.1415/2.0f + rand_rot(), tree.length * len_falloff * rand_float(0.7f, 1.3f)));
     }
 

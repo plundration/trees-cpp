@@ -20,7 +20,7 @@ int main()
     srand(time(0));
 
     float time = 0.0f;
-    Branch tree = generate_tree(4);
+    Branch tree = generate_tree(8);
 
     SCREEN_WIDTH = 850;
     SCREEN_HEIGHT = 850;
