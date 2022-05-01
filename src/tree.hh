@@ -49,7 +49,7 @@ public:
     float segmentStartLength = 38.0f;
     float segmentStartWidth = 60.0f;
     float segmentWidthFalloff = 0.882f;
-    float segmentLengthMultiplier = 1.29f;
+    float segmentLengthMultiplier = 1.19f;
     
     float rotationRandomness = 0.15f;
 
@@ -67,4 +67,4 @@ Branch generate_tree(int max_recursion);
 const float len_falloff = 0.62f;
 const float split_falloff = 0.72f;
 const float ext_falloff = 0.85f;
-const float density = 0.2f;
+const float density = 0.002f;

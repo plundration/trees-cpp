@@ -88,15 +88,15 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
     Branch branch = Branch();
     Segment segment;
     
-    float topWidth = width * segmentWidthFalloff;
+    float topWidth = width * segmentWidthFalloff * sin(segmentRot);
     
     float baseRot = surfaceAngle;
-    float topRot = segmentRot - M_PI_2 + randDistribution(rotationRandomness);
+    float topRot = baseRot + segmentRot - M_PI_2 + randDistribution(rotationRandomness);
     
     Vector2 bottomTang = {cos(baseRot), -sin(baseRot)};
     Vector2 topTang = {cos(topRot), -sin(topRot)};
     
-    Vector2 dir = {cos(segmentRot), -sin(segmentRot)};
+    Vector2 dir = {cos(baseRot + segmentRot), -sin(baseRot + segmentRot)};
     Vector2 topMidp = origin + dir * length;
     
     segment.blp = origin - bottomTang * width / 2.0f;
@@ -109,21 +109,23 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
     float totalLength = 0.0f;
     totalLength += length;
     
-    while (totalLength < maxLength && width > 3.0f) {
+    if (totalLength > maxLength || topWidth < 3.0f) return std::move(branch);
+    
+    while (totalLength < maxLength && topWidth > 3.0f) {
         float ratio = totalLength/maxLength;
         
         width = std::move(topWidth);
         topWidth = width * segmentWidthFalloff * randF(0.98f, 1.02f) * exp(-ratio/1.5f);
         
         baseRot = std::move(topRot);
-        segmentRot = baseRot + M_PI_2 + randDistribution(rotationRandomness*(1-ratio));
-        topRot = segmentRot - M_PI_2 + randDistribution(rotationRandomness*(1-ratio));
+        segmentRot = M_PI_2 + randDistribution(rotationRandomness*(1-ratio));
+        topRot = baseRot + segmentRot - M_PI_2 + randDistribution(rotationRandomness*(1-ratio));
         
         bottomTang = std::move(topTang);
         topTang = {cos(topRot), -sin(topRot)};
         
         origin = std::move(topMidp);
-        dir = {cos(segmentRot), -sin(segmentRot)};
+        dir = {cos(baseRot + segmentRot), -sin(baseRot + segmentRot)};
         topMidp = origin + dir * length;
 
         // Assign new points to segment
@@ -143,36 +145,34 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
     
     // ADD Branches
     int segmentCount = branch.segments.size();
-    int branchCount = segmentCount * density + 1;
+    int branchCount = totalLength * density + 1;
     for (int i = 0; i < branchCount; i++) {
-        
-        int segmentI;
-        if (segmentCount >= 4) segmentI = randI(2, segmentCount-2);
-        else segmentI = randI(0, segmentCount-1);
-
+        int segmentI = randI(segmentCount/7, segmentCount-1);
         Segment segment = branch.segments[segmentI];
         
-        Vector2 point;
         float width = mag(segment.blp - segment.brp) * branchWidthFalloff;
         
         Vector2 b, t, to;
         float angle, dirRot;
         
-         if (randChoice()) { // Left side
+        if (randChoice()) { // Left side
             b = segment.blp;
             t = segment.tlp;
             to = t - b;
             angle = atan(-to.y/to.x);
-            dirRot = angle + randF(0.2f, 0.9f);
-         } else { // Right side
+            dirRot = randF(0.2f, 0.9f);
+        } else { // Right side
             b = segment.brp;
             t = segment.trp;
             to = t - b;
             angle = atan(-to.y/to.x) - M_PI; // TODO ?? M_PI
-            dirRot = angle + randF(-0.2f, -0.9f);
+            dirRot = M_PI - randF(0.2f, 0.9f);
         }
+        
+        width /= sin(dirRot);
 
         float dist = mag(to);
+        Vector2 point;
 
         if (dist > width) {
             float offset = width/2.0f/dist;

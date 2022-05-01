@@ -89,8 +89,8 @@ void DrawBranch(const Branch &branch, float time) {
 
 void DrawBranch(const Branch &branch) {
     for (auto& s : branch.segments) {
-        DrawTriangle(s.blp, s.brp, s.trp, RAYWHITE);
-        DrawTriangle(s.blp, s.trp, s.tlp, RAYWHITE);
+        DrawTriangleLines(s.blp, s.brp, s.trp, RAYWHITE);
+        DrawTriangleLines(s.blp, s.trp, s.tlp, RAYWHITE);
     }
     for (auto& b : branch.branches) {
         DrawBranch(b);
