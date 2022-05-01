@@ -32,7 +32,7 @@ class TreeGenerator {
     static void addTriangles(Mesh& mesh, const Branch& branch, uint32_t& vertex);
     
 public:
-    float branchDensity = 0.0071f;
+    float branchDensity = 0.62f;
     float maxBranchLength = 1000.0f;
     float branchWidthFalloff = 0.45f;
     float branchLengthFalloff = 0.52f;

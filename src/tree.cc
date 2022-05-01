@@ -70,50 +70,64 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
         length *= segmentLengthMultiplier * randF(0.92f, 1.08f);
         totalLength += length;
     }
-    
+
     if (depth + rand() % 2 >= recursionLimit) return std::move(branch);
-    
+
     // ADD Branches
     int segmentCount = branch.segments.size();
-    int branchCount = totalLength * branchDensity + 1;
+    int branchCount = segmentCount * branchDensity + 1;
+    bool side = randChoice();
+    
+    vector<bool> hasBranch(segmentCount, false);
+
     for (int i = 0; i < branchCount; i++) {
+        // Pick a random free segment
         int segmentI = randI(segmentCount/5.8f, segmentCount-1);
+        while (hasBranch[segmentI]) segmentI = randI(segmentCount/6.4f, segmentCount-1);
+        hasBranch[segmentI] = true;
+        
         Segment segment = branch.segments[segmentI];
+        float ratio = segmentI/((float)segmentCount);
         
-        float mainBranchWidth = mag(segment.blp - segment.brp);
-        float newWidth = mainBranchWidth * branchWidthFalloff;
-        
-        Vector2 b, t, to;
+        Vector2 bottomPoint, topPoint, to;
         float angle, dirRot;
         
-        if (randChoice()) { // Left side
-            b = segment.blp;
-            t = segment.tlp;
-            to = t - b;
+        if (side) { // Left side
+            bottomPoint = segment.blp;
+            topPoint = segment.tlp;
+            to = topPoint - bottomPoint;
             angle = atan(-to.y/to.x);
             if (to.x < 0) { angle += M_PI; }
-            dirRot = idealBranchAngle + randDistribution(angleDistrib)*(1-0.9f*segmentI/(float)segmentCount);
+            dirRot = idealBranchAngle + randDistribution(angleDistrib)*(1-0.9f*ratio);
         } else { // Right side
-            b = segment.brp;
-            t = segment.trp;
-            to = t - b;
+            bottomPoint = segment.brp;
+            topPoint = segment.trp;
+            to = topPoint - bottomPoint;
             angle = atan(-to.y/to.x);
             if (to.x > 0) { angle += M_PI; }
-            dirRot = M_PI - idealBranchAngle - randDistribution(angleDistrib)*(1-segmentI/(float)segmentCount);
+            dirRot = M_PI - idealBranchAngle - randDistribution(angleDistrib)*(1-ratio);
         }
+        side = !side;
         
-        float dist = mag(to);
-        newWidth /= sin(dirRot);
-        newWidth = min(min(dist,mainBranchWidth), newWidth);
-        newWidth *= randF(0.9f, 1.0f);
-        float offset = newWidth/2.0f/dist;
-        Vector2 point = b + to * randF(offset, 1.0f-offset);
+        // Get values for main branch
+        float mainBranchLength = mag(to);
+        float mainBranchWidth = mag(segment.blp - segment.brp);
         
+        // New branch width
+        float newWidth = mainBranchWidth * pow(branchWidthFalloff, 1.0f/(0.5f*depth+1));  // Create new branch width
+        newWidth /= sin(dirRot);                                                     // Make it smaller in a perspective view
+        newWidth = min(min(mainBranchLength,mainBranchWidth), newWidth);             // Minimise it
+        newWidth *= randF(0.9f, 1.0f);                                               // Randomise it
+        
+        // Find new branch origin point
+        float offset = newWidth/2.0f/mainBranchLength;
+        Vector2 point = bottomPoint + to * randF(offset, 1.0f-offset);
+        
+        // New branch length
         length = mag((segment.blp+segment.brp)*0.5f-(segment.tlp+segment.trp)*0.5f) * segmentLengthMultiplier;
-        float maxWidth = maxLength * branchLengthFalloff * (1-segmentI/((float)segmentCount));
-
+        
         branch.branches.push_back(
-            getBranch(depth+1, point, newWidth, angle, dirRot, length, maxWidth)
+            getBranch(depth+1, point, newWidth, angle, dirRot, length, maxLength * branchLengthFalloff * (1-ratio))
         );
     }
     
