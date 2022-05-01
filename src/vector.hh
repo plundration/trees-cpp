@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 
+Vector2 normalize(const Vector2 &a);
 float mag(const Vector2 &a);
 
 Vector2 operator-(const Vector2 &a);

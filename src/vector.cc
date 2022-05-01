@@ -2,6 +2,10 @@
 
 #include <cmath>
 
+Vector2 normalize(const Vector2 &a) {
+	return a/mag(a);
+}
+
 float mag(const Vector2 &a) {
 	return sqrt(a.x*a.x+a.y*a.y);
 }

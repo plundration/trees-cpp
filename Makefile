@@ -1,5 +1,5 @@
 build:
-	g++ -g -o main `find . -name '*.cc'` -lraylib -lm -ldl -lpthread
+	g++ -g -o main `find . -name '*.cc'` lib/libraylib-debug.a -lm -ldl -lpthread
 
 run:
 	./main
