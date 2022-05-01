@@ -45,7 +45,7 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
         float ratio = totalLength/maxLength;
         
         width = std::move(topWidth);
-        topWidth = width * segmentWidthFalloff * randF(0.98f, 1.02f) * exp(-ratio/1.5f);
+        topWidth = width * segmentWidthFalloff * randF(0.98f, 1.02f) * exp(-ratio/1.2f);
         
         baseRot = std::move(topRot);
         segmentRot = M_PI_2 + randDistribution(rotationRandomness*(1-ratio));
@@ -77,7 +77,7 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
     int segmentCount = branch.segments.size();
     int branchCount = totalLength * branchDensity + 1;
     for (int i = 0; i < branchCount; i++) {
-        int segmentI = randI(segmentCount/7, segmentCount-1);
+        int segmentI = randI(segmentCount/5.8f, segmentCount-1);
         Segment segment = branch.segments[segmentI];
         
         float mainBranchWidth = mag(segment.blp - segment.brp);
@@ -92,14 +92,14 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
             to = t - b;
             angle = atan(-to.y/to.x);
             if (to.x < 0) { angle += M_PI; }
-            dirRot = randF(0.4f, 1.4f);
+            dirRot = idealBranchAngle + randDistribution(angleDistrib)*(1-0.9f*segmentI/(float)segmentCount);
         } else { // Right side
             b = segment.brp;
             t = segment.trp;
             to = t - b;
             angle = atan(-to.y/to.x);
             if (to.x > 0) { angle += M_PI; }
-            dirRot = M_PI - randF(0.2f, 1.1f);
+            dirRot = M_PI - idealBranchAngle - randDistribution(angleDistrib)*(1-segmentI/(float)segmentCount);
         }
         
         float dist = mag(to);
@@ -123,7 +123,7 @@ Branch TreeGenerator::getBranch(int depth, Vector2 origin, float width, float su
 Tree TreeGenerator::getTree() {
     Tree tree;
     
-    tree.root = getBranch(0, {0,500}, segmentStartWidth, 0.0f, M_PI_2, segmentStartLength, maxBranchLength);
+    tree.root = getBranch(0, {0,0}, segmentStartWidth, 0.0f, M_PI_2, segmentStartLength, maxBranchLength);
     tree.segmentCount = countSegments(tree.root);
     
     return std::move(tree);

@@ -31,10 +31,10 @@ int main()
 
     Camera2D camera = { .offset = {SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f}, .target = {0,0}, .rotation = 0.0f, .zoom = 1.0f };
 
-    TreeGenerator treeGenerator{};
-    Tree tree = treeGenerator.getTree();
+    TreeGenerator gen{};
+    Tree tree = gen.getTree();
     Model model = LoadModelFromMesh(TreeGenerator::generateMesh(tree));
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture("texture.png");
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture("t.png");
     
     bool regenerate = false;    
     
@@ -48,23 +48,30 @@ int main()
 
         if (IsKeyPressed(KEY_R) || regenerate) {
             UnloadMesh(model.meshes[0]);
-            tree = treeGenerator.getTree();
+            tree = gen.getTree();
             model.meshes[0] = TreeGenerator::generateMesh(tree);
             regenerate = false;
         }
         
         BeginDrawing();
-            ClearBackground(BLACK);
+            ClearBackground({93,155,168,255});
             BeginMode2D(camera);
+                DrawRectangleRounded({-400,0,800,100}, 0.2f, 8, {59,112,63,255});
                 DrawModel(model, {0,0,0}, 1.0f, RAYWHITE);
                 //DrawModelWires(model, {0,0,0}, 1.0f, RAYWHITE);
             EndMode2D();
         
             if (GuiButton({10,10,100,40}, "GENERATE")) { regenerate = true; }
 
-            treeGenerator.branchDensity = GuiSlider(
-                { 10, 60, 200, 20 }, "TEST", TextFormat("%.4f", treeGenerator.branchDensity), treeGenerator.branchDensity, 0.0f, 0.009f
-            );
+            gen.branchDensity = GuiSlider( { 50, 60, 130, 20 }, "DENSITY", TextFormat("%.4f", gen.branchDensity), gen.branchDensity, 0.0f, 0.009f );
+            gen.maxBranchLength = GuiSlider( { 40, 90, 130, 20 }, "MAX L", TextFormat("%4.f", gen.maxBranchLength), gen.maxBranchLength, 400.0f, 1500.0f );
+            gen.branchLengthFalloff = GuiSlider( { 40, 120, 130, 20 }, "BWF", TextFormat("%.4f", gen.branchLengthFalloff), gen.branchLengthFalloff, 0.40f, 0.95f );
+            gen.branchWidthFalloff = GuiSlider( { 40, 150, 130, 20 }, "BLF", TextFormat("%.4f", gen.branchWidthFalloff), gen.branchWidthFalloff, 0.30f, 0.90f );
+            gen.segmentStartLength = GuiSlider( { 40, 180, 130, 20 }, "SSL", TextFormat("%2.1f", gen.segmentStartLength), gen.segmentStartLength, 20.0f, 90.0f );
+            gen.segmentStartWidth = GuiSlider( { 40, 210, 130, 20 }, "SSW", TextFormat("%2.1f", gen.segmentStartWidth), gen.segmentStartWidth, 20.0f, 90.0f );
+            gen.segmentWidthFalloff = GuiSlider( { 40, 240, 130, 20 }, "SWF", TextFormat("%.4f", gen.segmentWidthFalloff), gen.segmentWidthFalloff, 0.85f, 0.98f );
+            gen.segmentLengthMultiplier = GuiSlider( { 40, 270, 130, 20 }, "SLM", TextFormat("%.4f", gen.segmentLengthMultiplier), gen.segmentLengthMultiplier, 0.99f, 1.03f );
+            gen.rotationRandomness = GuiSlider( { 40, 300, 130, 20 }, "ROT", TextFormat("%.3f", gen.rotationRandomness), gen.rotationRandomness, 0.05f, 0.45f );
 
         EndDrawing();
     }
